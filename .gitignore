@@ -1,0 +1,6 @@
+# Nothing to ignore: the site is fully static.
+# This file exists so tooling does not warn, and so local scratch files stay out.
+
+.DS_Store
+Thumbs.db
+*.log

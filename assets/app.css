@@ -1,0 +1,940 @@
+/* ==========================================================================
+   MEDHANE — Ethiopian herbals & nutrition
+   Design system extracted from the supplied Swag landing-page reference and
+   extended across every page. Elevation patterns borrowed (not copied) from
+   bchiang7/v4 and adrianhajdin/portfolio: compact label/value metadata rows,
+   a single clear primary action per card, bento composition, gentle hover.
+   ========================================================================== */
+
+/* --- 1. Tokens ----------------------------------------------------------- */
+:root {
+  /* Canvas + surfaces: the reference's soft lavender paper with white cards */
+  --paper:      #f1eff7;
+  --paper-sunk: #e8e4f2;
+  --card:       #ffffff;
+
+  /* Ink: the reference's deep purple-black, used for all display type */
+  --ink:      #18092e;
+  --ink-70:   #4b3d63;
+  --ink-50:   #7a7091;
+  --ink-25:   #b8b2c9;
+
+  /* Accents */
+  --lav:      #a78bf5;   /* primary lavender — the reference's signature */
+  --lav-deep: #7a5af0;
+  --lav-soft: #e6defa;
+  --lav-wash: #f0ebfd;
+  --peri:     #a8b4f7;   /* periwinkle band colour from the reference */
+  --honey:    #f0b03c;   /* Ethiopian honey */
+  --coffee:   #4a2e1c;   /* roasted buna */
+  --leaf:     #4e9b6b;   /* fresh botanicals */
+  --clay:     #d9714f;
+
+  /* Type */
+  --f-display: 'Outfit', 'Manrope', system-ui, sans-serif;
+  --f-text:    'Manrope', system-ui, -apple-system, sans-serif;
+
+  /* Shape vocabulary: everything is a pill, a card, or a band */
+  --r-chip: 999px;
+  --r-card: 26px;
+  --r-band: 40px;
+
+  /* Layout */
+  --wrap: 1240px;
+  --gut: clamp(18px, 4vw, 40px);
+  --nav-h: 64px;
+
+  /* Motion */
+  --ease: cubic-bezier(.22, 1, .36, 1);
+  --fast: .22s var(--ease);
+
+  /* Per-tile gradient art, set inline by the card/stack markup */
+  --t1: var(--lav-soft);
+  --t2: var(--lav-soft);
+}
+
+/* --- 2. Reset ------------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--f-text);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+img, svg { display: block; max-width: 100%; }
+a { color: inherit; text-decoration: none; }
+button { font: inherit; color: inherit; }
+
+h1, h2, h3, h4 {
+  font-family: var(--f-display);
+  font-weight: 800;
+  letter-spacing: -.035em;
+  line-height: .95;
+  margin: 0;
+  text-wrap: balance;
+}
+
+p { margin: 0; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+:focus-visible {
+  outline: 3px solid var(--lav-deep);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+::selection { background: var(--lav); color: var(--ink); }
+
+.skip {
+  position: absolute; left: -9999px; top: 12px; z-index: 200;
+  background: var(--ink); color: #fff; padding: 12px 18px;
+  border-radius: var(--r-chip);
+}
+.skip:focus { left: 16px; }
+
+/* --- 3. Layout primitives ------------------------------------------------ */
+.wrap {
+  width: min(var(--wrap), 100% - (var(--gut) * 2));
+  margin-inline: auto;
+}
+
+.wrap--wide { width: min(1440px, 100% - (var(--gut) * 2)); }
+
+.section { padding-block: clamp(56px, 8vw, 120px); }
+.section--tight { padding-block: clamp(36px, 5vw, 72px); }
+
+/* --- 4. Buttons — pill shapes, ink-first (reference rule) --------------- */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border: 1.5px solid var(--ink);
+  border-radius: var(--r-chip);
+  background: var(--ink);
+  color: #fff;
+  font-family: var(--f-text);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: -.01em;
+  cursor: pointer;
+  transition: transform var(--fast), box-shadow var(--fast), background var(--fast), color var(--fast);
+}
+.btn:hover { transform: translateY(-2px); box-shadow: 0 10px 24px -8px rgb(24 9 46 / .45); }
+.btn:active { transform: translateY(0); }
+
+.btn--ghost { background: transparent; color: var(--ink); }
+.btn--ghost:hover { background: var(--ink); color: #fff; }
+
+.btn--lav { background: var(--lav); border-color: var(--lav); color: var(--ink); }
+.btn--lav:hover { background: var(--lav-deep); border-color: var(--lav-deep); color: #fff; }
+
+.btn--sm { padding: 10px 18px; font-size: 13px; }
+.btn--block { width: 100%; justify-content: center; }
+
+.btn .arw { transition: transform var(--fast); }
+.btn:hover .arw { transform: translateX(4px); }
+
+/* Small pill used for metadata, filters and inline tags */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 13px;
+  border-radius: var(--r-chip);
+  background: var(--lav-wash);
+  color: var(--ink-70);
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1;
+  white-space: nowrap;
+}
+.chip--ink   { background: var(--ink); color: #fff; }
+.chip--lav   { background: var(--lav); color: var(--ink); }
+.chip--honey { background: #fdf0d6; color: #7a4f08; }
+.chip--leaf  { background: #e2f1e7; color: #245c3c; }
+.chip--line  { background: transparent; border: 1.5px solid var(--ink-25); color: var(--ink-70); }
+
+/* --- 5. Type scale — oversized, tight, the reference's signature --------- */
+.d1 { font-size: clamp(44px, 7.6vw, 104px); line-height: .87; }
+.d2 { font-size: clamp(34px, 5.2vw, 68px); line-height: .92; }
+.d3 { font-size: clamp(26px, 3.2vw, 42px); line-height: 1; }
+.d4 { font-size: clamp(20px, 2vw, 27px); line-height: 1.1; }
+
+.lede {
+  font-size: clamp(15px, 1.35vw, 18px);
+  line-height: 1.65;
+  color: var(--ink-70);
+  max-width: 56ch;
+}
+
+.eyebrow {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--ink-50);
+}
+
+/* Oversized numerals used in the stats band */
+.numeral {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: clamp(64px, 12vw, 168px);
+  line-height: .82;
+  letter-spacing: -.05em;
+  color: var(--lav);
+}
+
+/* --- 6. Floating pill nav (reference rule) ------------------------------ */
+.nav {
+  position: fixed;
+  z-index: 100;
+  top: 18px; left: 50%;
+  transform: translateX(-50%);
+  width: min(760px, 100% - 24px);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 9px 8px 16px;
+  border: 1.5px solid rgb(24 9 46 / .1);
+  border-radius: var(--r-chip);
+  background: rgb(255 255 255 / .82);
+  backdrop-filter: blur(18px) saturate(1.4);
+  box-shadow: 0 14px 40px -18px rgb(24 9 46 / .4);
+}
+
+.nav__brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 17px;
+  letter-spacing: -.04em;
+}
+.nav__mark {
+  min-width: 32px; height: 26px;
+  padding: 0 7px;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--lav);
+  display: grid; place-items: center;
+  flex: none;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: -.02em;
+  line-height: 1;
+}
+
+.nav__links { display: flex; align-items: center; gap: 2px; }
+.nav__links a {
+  padding: 9px 14px;
+  border-radius: var(--r-chip);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-70);
+  transition: background var(--fast), color var(--fast);
+}
+.nav__links a:hover { background: var(--lav-wash); color: var(--ink); }
+.nav__links a[aria-current='page'] { background: var(--ink); color: #fff; }
+
+.nav__cta {
+  padding: 10px 17px;
+  border-radius: var(--r-chip);
+  background: var(--ink);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+  transition: background var(--fast);
+}
+.nav__cta:hover { background: var(--lav-deep); }
+
+.nav__burger {
+  display: none;
+  width: 40px; height: 40px;
+  border: 0; border-radius: 50%;
+  background: var(--ink); color: #fff;
+  cursor: pointer;
+  place-items: center;
+}
+.nav__burger svg { width: 16px; height: 16px; }
+
+@media (max-width: 860px) {
+  .nav { padding: 8px 8px 8px 14px; }
+  .nav__burger { display: grid; }
+  .nav__links, .nav__cta {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0; right: 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 2px;
+    padding: 10px;
+    border: 1.5px solid rgb(24 9 46 / .1);
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 20px 50px -22px rgb(24 9 46 / .5);
+  }
+  .nav[data-open='true'] .nav__links,
+  .nav[data-open='true'] .nav__cta { display: flex; }
+  .nav__links a, .nav__cta { text-align: center; padding: 13px; border-radius: var(--r-chip); }
+}
+
+/* --- 7. Split rows — the reference's alternating two-column sections ----- */
+.split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: clamp(28px, 5vw, 76px);
+  align-items: center;
+}
+.split--reverse .split__media { order: -1; }
+.split__copy > * + * { margin-top: 20px; }
+
+@media (max-width: 900px) {
+  .split { grid-template-columns: 1fr; gap: 34px; }
+  .split--reverse .split__media { order: 0; }
+}
+
+.actions { display: flex; flex-wrap: wrap; gap: 10px; }
+
+/* --- 8. Card stack / collage — the reference's floating photo composition */
+.stack {
+  position: relative;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  padding: 4px;
+}
+.stack__tile {
+  position: relative;
+  aspect-ratio: 1 / 1.06;
+  border-radius: var(--r-card);
+  border: 1.5px solid rgb(24 9 46 / .1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 16px;
+  /* Gradient art stands in for photography — no stock images are invented */
+  background:
+    radial-gradient(120% 90% at 15% 10%, rgb(255 255 255 / .5), transparent 60%),
+    linear-gradient(150deg, var(--t1, var(--lav-soft)), var(--t2, var(--lav)));
+  box-shadow: 0 18px 34px -22px rgb(24 9 46 / .6);
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+.stack__tile:hover { transform: translateY(-5px) rotate(0deg) !important; box-shadow: 0 26px 44px -24px rgb(24 9 46 / .7); }
+
+/* The reference tilts some tiles and offsets them */
+.stack__tile:nth-child(1) { transform: rotate(-2.5deg); }
+.stack__tile:nth-child(2) { transform: translateY(-14px) rotate(2deg); }
+.stack__tile:nth-child(3) { transform: rotate(1.5deg); }
+.stack__tile:nth-child(4) { transform: translateY(10px) rotate(-2deg); }
+
+.stack__tile--wide { grid-column: span 2; aspect-ratio: 2 / 1; }
+.stack__tile--tall { grid-row: span 2; aspect-ratio: 1 / 2.12; }
+
+.stack__glyph {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: clamp(34px, 5vw, 56px);
+  opacity: .9;
+}
+
+.stack__cap {
+  position: relative;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -.02em;
+  color: var(--ink);
+  background: rgb(255 255 255 / .88);
+  backdrop-filter: blur(6px);
+  padding: 7px 12px;
+  border-radius: var(--r-chip);
+  align-self: flex-start;
+}
+.stack__cap small {
+  display: block;
+  font-family: var(--f-text);
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--ink-50);
+  letter-spacing: 0;
+}
+
+@media (max-width: 620px) {
+  .stack__tile:nth-child(2) { transform: translateY(-8px) rotate(1.5deg); }
+  .stack__tile:nth-child(4) { transform: translateY(6px) rotate(-1.5deg); }
+}
+
+/* Floating sticker chips riding on top of the collage */
+.stickers {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.sticker {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 14px;
+  border-radius: var(--r-chip);
+  background: #fff;
+  border: 1.5px solid rgb(24 9 46 / .1);
+  box-shadow: 0 14px 28px -14px rgb(24 9 46 / .55);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  animation: float-y 7s ease-in-out infinite;
+}
+.sticker--lav   { background: var(--lav); }
+.sticker--peri  { background: var(--peri); }
+.sticker--honey { background: var(--honey); }
+.sticker--ink   { background: var(--ink); color: #fff; }
+
+.sticker--tl { top: -14px; left: -8px; }
+.sticker--tr { top: 20%; right: -14px; animation-delay: -1.4s; }
+.sticker--br { bottom: -12px; right: 6%; animation-delay: -2.8s; }
+.sticker--bl { bottom: 24%; left: -14px; animation-delay: -4.1s; }
+
+@keyframes float-y {
+  0%, 100% { transform: translateY(0); }
+  50%      { transform: translateY(-9px); }
+}
+
+/* Media wrapper so stickers can sit outside the stack bounds */
+.media { position: relative; }
+
+/* --- 9. Segment tabs — the reference's pill switcher -------------------- */
+.segment {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 6px;
+  border-radius: var(--r-chip);
+  background: var(--card);
+  border: 1.5px solid rgb(24 9 46 / .08);
+  box-shadow: 0 8px 20px -14px rgb(24 9 46 / .5);
+}
+.segment button {
+  border: 0;
+  background: transparent;
+  padding: 10px 20px;
+  border-radius: var(--r-chip);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink-50);
+  cursor: pointer;
+  transition: background var(--fast), color var(--fast);
+}
+.segment button:hover { color: var(--ink); background: var(--lav-wash); }
+.segment button[aria-selected='true'] { background: var(--ink); color: #fff; }
+
+/* Tab panels driven by the segment control */
+.panel[hidden] { display: none; }
+
+/* --- 10. Bands — rounded full-bleed colour blocks ----------------------- */
+.band {
+  border-radius: var(--r-band);
+  padding: clamp(28px, 4.5vw, 64px);
+}
+.band--lav   { background: var(--lav); color: var(--ink); }
+.band--peri  { background: var(--peri); }
+.band--wash  { background: var(--lav-wash); }
+.band--ink   { background: var(--ink); color: #fff; }
+.band--card  { background: var(--card); border: 1.5px solid rgb(24 9 46 / .08); }
+
+.band--ink .lede, .band--ink .eyebrow { color: rgb(255 255 255 / .72); }
+.band--peri .lede { color: #2c3260; }
+.band--ink h1, .band--ink h2, .band--ink h3, .band--ink h4 { color: #fff; }
+
+/* Bento: the reference's large panel + smaller inset cards */
+.bento {
+  display: grid;
+  grid-template-columns: 1.55fr 1fr;
+  gap: 14px;
+}
+.bento--even { grid-template-columns: repeat(2, 1fr); }
+.bento--thirds { grid-template-columns: repeat(3, 1fr); }
+
+@media (max-width: 860px) {
+  .bento, .bento--even, .bento--thirds { grid-template-columns: 1fr; }
+}
+
+.panel-card {
+  background: var(--card);
+  border-radius: var(--r-card);
+  padding: clamp(20px, 2.6vw, 32px);
+  border: 1.5px solid rgb(24 9 46 / .07);
+  transition: transform var(--fast), box-shadow var(--fast);
+}
+.panel-card:hover { transform: translateY(-4px); box-shadow: 0 22px 40px -26px rgb(24 9 46 / .6); }
+.panel-card > * + * { margin-top: 12px; }
+.panel-card p { color: var(--ink-70); font-size: 14px; line-height: 1.65; }
+
+.panel-card--ink { background: var(--ink); border-color: var(--ink); color: #fff; }
+.panel-card--ink p { color: rgb(255 255 255 / .74); }
+.panel-card--lav { background: var(--lav); border-color: var(--lav); }
+
+/* --- 11. Metadata rows — compact label/value, the bchiang7/v4 pattern --- */
+.meta { display: grid; gap: 0; margin: 0; }
+.meta__row {
+  display: grid;
+  grid-template-columns: minmax(84px, 34%) 1fr;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid rgb(24 9 46 / .1);
+  font-size: 13px;
+  line-height: 1.45;
+}
+.meta__row:last-child { border-bottom: 0; }
+.meta__row dt {
+  font-weight: 700;
+  color: var(--ink-50);
+  font-size: 11px;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding-top: 2px;
+}
+.meta__row dd { margin: 0; color: var(--ink); font-weight: 500; }
+
+/* --- 12. Herb + blend catalogue cards (packed format) ------------------- */
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(310px, 100%), 1fr));
+  gap: 14px;
+}
+.grid--wide { grid-template-columns: repeat(auto-fill, minmax(min(380px, 100%), 1fr)); }
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background: var(--card);
+  border: 1.5px solid rgb(24 9 46 / .08);
+  border-radius: var(--r-card);
+  overflow: hidden;
+  transition: transform var(--fast), box-shadow var(--fast), border-color var(--fast);
+}
+.card:hover {
+  transform: translateY(-5px);
+  border-color: rgb(24 9 46 / .2);
+  box-shadow: 0 26px 48px -28px rgb(24 9 46 / .65);
+}
+
+.card__top {
+  position: relative;
+  padding: 18px;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  background:
+    radial-gradient(110% 80% at 12% 8%, rgb(255 255 255 / .55), transparent 62%),
+    linear-gradient(145deg, var(--t1, var(--lav-soft)), var(--t2, var(--lav-soft)));
+  min-height: 132px;
+}
+.card__glyph {
+  font-size: 40px;
+  line-height: 1;
+  filter: drop-shadow(0 6px 10px rgb(24 9 46 / .18));
+}
+.card__badge {
+  padding: 6px 12px;
+  border-radius: var(--r-chip);
+  background: rgb(255 255 255 / .9);
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+}
+
+.card__body { padding: 18px; display: flex; flex-direction: column; gap: 12px; flex: 1; }
+.card__body > * + * { margin-top: 0; }
+
+.card__name {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: -.035em;
+  line-height: 1;
+}
+.card__latin {
+  font-size: 12px;
+  font-style: italic;
+  color: var(--ink-50);
+  margin-top: -8px;
+}
+
+.card__use {
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--ink-70);
+}
+.card__use b { color: var(--ink); font-weight: 700; }
+
+.tags { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.card__foot {
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid rgb(24 9 46 / .1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+.price {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 21px;
+  letter-spacing: -.03em;
+}
+
+/* --- 13. Filter bar ----------------------------------------------------- */
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 22px;
+}
+.filters button {
+  padding: 9px 16px;
+  border: 1.5px solid rgb(24 9 46 / .14);
+  border-radius: var(--r-chip);
+  background: transparent;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--ink-70);
+  cursor: pointer;
+  transition: background var(--fast), color var(--fast), border-color var(--fast);
+}
+.filters button:hover { border-color: var(--ink); color: var(--ink); }
+.filters button[aria-pressed='true'] { background: var(--ink); border-color: var(--ink); color: #fff; }
+
+/* --- 14. Steps ----------------------------------------------------------- */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; counter-reset: s; }
+@media (max-width: 900px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .steps { grid-template-columns: 1fr; } }
+
+.step {
+  counter-increment: s;
+  background: var(--card);
+  border: 1.5px solid rgb(24 9 46 / .08);
+  border-radius: var(--r-card);
+  padding: 22px;
+}
+.step::before {
+  content: '0' counter(s);
+  display: block;
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -.04em;
+  color: var(--lav);
+  margin-bottom: 10px;
+}
+.step h3 { font-size: 19px; margin-bottom: 8px; }
+.step p { font-size: 14px; color: var(--ink-70); line-height: 1.6; }
+
+/* --- 15. Testimonials (adrianhajdin/portfolio presentation pattern) ------ */
+.quotes { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+@media (max-width: 900px) { .quotes { grid-template-columns: 1fr; } }
+
+.quote {
+  background: var(--card);
+  border-radius: var(--r-card);
+  padding: 26px;
+  border: 1.5px solid rgb(24 9 46 / .08);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.quote blockquote {
+  margin: 0;
+  font-family: var(--f-display);
+  font-weight: 600;
+  font-size: 17px;
+  line-height: 1.35;
+  letter-spacing: -.02em;
+}
+.quote figcaption { margin-top: auto; display: flex; align-items: center; gap: 11px; }
+.quote__av {
+  width: 36px; height: 36px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  background: var(--lav);
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 14px;
+  color: var(--ink);
+  flex: none;
+}
+.quote cite { font-style: normal; font-size: 13px; font-weight: 700; display: block; }
+.quote small { font-size: 12px; color: var(--ink-50); }
+
+/* --- 16. Stat block ------------------------------------------------------ */
+.stat-grid { display: grid; grid-template-columns: 1fr 1.55fr; gap: 14px; align-items: stretch; }
+@media (max-width: 860px) { .stat-grid { grid-template-columns: 1fr; } }
+
+.stat-list { display: grid; gap: 8px; align-content: start; }
+.stat-list button {
+  text-align: left;
+  border: 0;
+  background: var(--card);
+  border-radius: 18px;
+  padding: 16px 18px;
+  cursor: pointer;
+  border: 1.5px solid rgb(24 9 46 / .08);
+  transition: background var(--fast), border-color var(--fast), color var(--fast);
+}
+.stat-list button:hover { border-color: var(--ink); }
+.stat-list button[aria-pressed='true'] { background: var(--lav); border-color: var(--lav); color: var(--ink); }
+.stat-list b { display: block; font-family: var(--f-display); font-size: 15px; letter-spacing: -.02em; }
+.stat-list small { font-size: 12px; color: var(--ink-50); }
+.stat-list button[aria-pressed='true'] small { color: rgb(24 9 46 / .7); }
+
+.stat-panel {
+  background: var(--card);
+  border-radius: var(--r-card);
+  border: 1.5px solid rgb(24 9 46 / .08);
+  padding: clamp(24px, 3.4vw, 44px);
+  display: grid;
+  align-content: center;
+}
+
+/* --- 17. Page hero ------------------------------------------------------- */
+.phero {
+  padding: calc(var(--nav-h) + 78px) 0 clamp(38px, 5vw, 68px);
+}
+.phero__grid { display: grid; grid-template-columns: 1.25fr .75fr; gap: clamp(24px, 4vw, 56px); align-items: end; }
+.phero h1 { margin-top: 14px; }
+@media (max-width: 860px) { .phero__grid { grid-template-columns: 1fr; } }
+
+/* Breadcrumb-ish trail */
+.trail { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; font-size: 12px; color: var(--ink-50); }
+.trail a { font-weight: 600; }
+.trail a:hover { color: var(--ink); }
+
+/* --- 18. Accordion (FAQ) ------------------------------------------------ */
+.acc { display: grid; gap: 10px; }
+.acc details {
+  background: var(--card);
+  border: 1.5px solid rgb(24 9 46 / .08);
+  border-radius: 20px;
+  padding: 0 22px;
+  transition: border-color var(--fast);
+}
+.acc details[open] { border-color: var(--ink); }
+.acc summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 19px 0;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: var(--f-display);
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -.025em;
+}
+.acc summary::-webkit-details-marker { display: none; }
+.acc summary::after {
+  content: '';
+  width: 22px; height: 22px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--lav-wash);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2318092e' stroke-width='3' stroke-linecap='round'%3E%3Cpath d='M12 5v14M5 12h14'/%3E%3C/svg%3E");
+  background-size: 13px;
+  background-position: center;
+  background-repeat: no-repeat;
+  transition: transform var(--fast), background var(--fast);
+}
+.acc details[open] summary::after { transform: rotate(135deg); background-color: var(--lav); }
+.acc .acc__body { padding: 0 0 21px; color: var(--ink-70); font-size: 14.5px; line-height: 1.7; max-width: 72ch; }
+.acc .acc__body p + p { margin-top: 11px; }
+
+/* --- 19. Safety / callout ------------------------------------------------ */
+.callout {
+  border-radius: var(--r-card);
+  padding: clamp(20px, 3vw, 32px);
+  background: #fdf3e2;
+  border: 1.5px solid #f0d3a0;
+  display: flex;
+  gap: 16px;
+  align-items: flex-start;
+}
+.callout__icon {
+  width: 38px; height: 38px;
+  flex: none;
+  border-radius: 50%;
+  background: var(--honey);
+  display: grid; place-items: center;
+  font-size: 19px;
+}
+.callout h3 { font-size: 17px; margin-bottom: 7px; }
+.callout p { font-size: 13.5px; line-height: 1.65; color: #6b4a12; }
+
+.callout--info { background: var(--lav-wash); border-color: #d9cdf7; }
+.callout--info .callout__icon { background: var(--lav); }
+.callout--info p { color: var(--ink-70); }
+
+/* --- 20. Social circles + CTA band (reference rule) --------------------- */
+.socials { display: flex; flex-wrap: wrap; gap: 12px; }
+.socials a {
+  width: 56px; height: 56px;
+  border-radius: 50%;
+  background: #fff;
+  display: grid; place-items: center;
+  color: var(--ink);
+  transition: transform var(--fast), background var(--fast);
+}
+.socials a:hover { transform: translateY(-4px) scale(1.06); background: var(--ink); color: #fff; }
+.socials svg { width: 22px; height: 22px; }
+
+/* --- 21. Footer — white rounded card, columns + legal row -------------- */
+.footer { padding: clamp(40px, 6vw, 80px) 0 28px; }
+
+.footer__card {
+  background: var(--card);
+  border-radius: var(--r-band);
+  border: 1.5px solid rgb(24 9 46 / .08);
+  padding: clamp(26px, 3.6vw, 48px);
+}
+
+.footer__top {
+  display: grid;
+  grid-template-columns: 1.25fr 2fr;
+  gap: clamp(24px, 4vw, 56px);
+  padding-bottom: 30px;
+  border-bottom: 1.5px solid rgb(24 9 46 / .1);
+}
+@media (max-width: 860px) { .footer__top { grid-template-columns: 1fr; } }
+
+.footer__logo {
+  font-family: var(--f-display);
+  font-weight: 800;
+  font-size: 30px;
+  letter-spacing: -.045em;
+  line-height: .9;
+}
+.footer__logo span { color: var(--lav); }
+.footer__logo small {
+  display: block;
+  margin-top: 7px;
+  font-family: var(--f-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--ink-50);
+}
+
+.footer__cols {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 22px;
+}
+@media (max-width: 620px) { .footer__cols { grid-template-columns: repeat(2, 1fr); } }
+
+.footer__cols h4 {
+  font-family: var(--f-text);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--ink);
+  margin-bottom: 14px;
+}
+.footer__cols li + li { margin-top: 9px; }
+.footer__cols a { font-size: 13.5px; color: var(--ink-70); }
+.footer__cols a:hover { color: var(--ink); text-decoration: underline; text-underline-offset: 3px; }
+
+.footer__mid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 24px 0;
+  border-bottom: 1.5px solid rgb(24 9 46 / .1);
+}
+
+.footer__legal {
+  padding-top: 22px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 20px;
+  justify-content: space-between;
+  font-size: 11.5px;
+  color: var(--ink-50);
+}
+.footer__legal nav { display: flex; flex-wrap: wrap; gap: 16px; }
+.footer__legal a:hover { color: var(--ink); }
+
+/* --- 22. Doodles — squiggles and confetti (reference decoration) -------- */
+.doodle { position: absolute; pointer-events: none; color: var(--ink); opacity: .8; }
+.doodle--lav  { color: var(--lav); }
+.doodle--peri { color: var(--peri); }
+.doodle--honey{ color: var(--honey); }
+.doodle--sq { position: absolute; pointer-events: none; color: var(--lav); }
+
+/* --- 23. Scroll reveal (gentle, reduced-motion aware) ------------------- */
+[data-reveal] {
+  opacity: 0;
+  transform: translateY(22px);
+  transition: opacity .7s var(--ease), transform .7s var(--ease);
+}
+[data-reveal].is-in { opacity: 1; transform: none; }
+
+/* --- 24. Small utilities ------------------------------------------------ */
+.center { text-align: center; }
+.center .lede { margin-inline: auto; }
+.center .actions { justify-content: center; }
+.mt-s { margin-top: 12px; }
+.mt-m { margin-top: 26px; }
+.mt-l { margin-top: 48px; }
+.hr { height: 1.5px; background: rgb(24 9 46 / .1); border: 0; margin: 0; }
+
+.sr {
+  position: absolute; width: 1px; height: 1px;
+  padding: 0; margin: -1px; overflow: hidden;
+  clip: rect(0 0 0 0); white-space: nowrap; border: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: .01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: .01ms !important;
+  }
+  [data-reveal] { opacity: 1; transform: none; }
+}
+
+/* --- 25. Print ---------------------------------------------------------- */
+@media print {
+  .nav, .footer, .doodle, .stickers { display: none; }
+  body { background: #fff; }
+}
